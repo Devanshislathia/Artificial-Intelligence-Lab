@@ -1,0 +1,69 @@
+import math
+
+def alpha_beta_pruning(depth, node_index, is_maximizing, values, alpha, beta, max_depth):
+    """
+    Alpha-Beta Pruning algorithm to find the optimal value for a minimax tree.
+
+    Args:
+        depth (int): Current depth of the tree.
+        node_index (int): Index of the current node.
+        is_maximizing (bool): True if it's a maximizing player's turn, False otherwise.
+        values (list): List of leaf node values.
+        alpha (int): Best value that the maximizer can guarantee.
+        beta (int): Best value that the minimizer can guarantee.
+        max_depth (int): Total depth of the tree.
+
+    Returns:
+        int: The optimal value for the current state.
+    """
+    # Base case: If the depth equals max depth, return the leaf node value
+    if depth == max_depth:
+        return values[node_index]
+
+    if is_maximizing:
+        best = -math.inf
+        # Explore left and right children
+        for i in range(2):
+            value = alpha_beta_pruning(depth + 1, node_index * 2 + i, False, values, alpha, beta, max_depth)
+            best = max(best, value)
+            alpha = max(alpha, best)
+            
+            # Alpha-Beta Pruning
+            if beta <= alpha:
+                break
+        return best
+
+    else:  # Minimizing player
+        best = math.inf
+        # Explore left and right children
+        for i in range(2):
+            value = alpha_beta_pruning(depth + 1, node_index * 2 + i, True, values, alpha, beta, max_depth)
+            best = min(best, value)
+            beta = min(beta, best)
+            
+            # Alpha-Beta Pruning
+            if beta <= alpha:
+                break
+        return best
+
+def main():
+    print("\nAlpha-Beta Pruning Implementation\n")
+    
+    # User input for depth and leaf nodes
+    max_depth = int(input("Enter the depth of the game tree: "))
+    total_leaf_nodes = 2 ** max_depth
+    print(f"Total leaf nodes needed: {total_leaf_nodes}")
+
+    print("Enter the values of leaf nodes (space-separated):")
+    values = list(map(int, input().split()))
+
+    if len(values) != total_leaf_nodes:
+        print(f"Error: You must enter exactly {total_leaf_nodes} leaf node values.")
+        return
+
+    # Perform Alpha-Beta Pruning
+    result = alpha_beta_pruning(0, 0, True, values, -math.inf, math.inf, max_depth)
+    print(f"\nThe optimal value is: {result}")
+
+if __name__ == "__main__":
+    main()
